@@ -12,7 +12,7 @@ Pre-requisites
 
 - Android Studio 2.2+.
 - Android Things [Joule Board][Joule_Board].
-- Android Things: supported [microphone][mic] and [speaker][speaker].
+- Android Things: supported [microphone][mic], [speaker][speaker], and [usb hub][usbhub].
 - [Grove - LCD RGB Backlight][jhd1313m1].
 - [Google API Console Project][console].
 - [API.AI Agent][API-AI-Agent] An Actions project defines metadata about your app and lets you track your app through the approval process. An API.AI agent defines intents that map what users can say to a corresponding response, which is returned by fulfillment.
@@ -102,7 +102,7 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
 License for the specific language governing permissions and limitations under
 the License.
 
-
+[usbhub]: https://www.adafruit.com/product/2998
 [jhd1313m1]: https://www.seeedstudio.com/Grove-LCD-RGB-Backlight-p-1643.html
 [Joule_Board]: https://developer.android.com/things/hardware/joule.html
 [JouleBoard]: https://github.com/odwdinc/AndroidThings-GoogleAssistant/tree/master/api.ai/JouleBoard.zip
