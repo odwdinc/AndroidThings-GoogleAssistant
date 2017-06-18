@@ -13,8 +13,9 @@ Pre-requisites
 - Android Things: supported [microphone][mic] and [speaker][speaker].
 - [Google API Console Project][console].
 - [API.AI Agent][API-AI-Agent] An Actions project defines metadata about your app and lets you track your app through the approval process. An API.AI agent defines intents that map what users can say to a corresponding response, which is returned by fulfillment.
-- [Actions on Google][AOgoogle]
-- [Deploy the fulfillment][fulfillment], a Firebase function, that processes the API.AI agent's intents when users say something that triggers the intents.
+- [Actions on Google][AOgoogle] lets developers build apps for the Google Assistant.
+- [Firebase][firebase] Tools from Google for developing great apps, engaging with your users
+- [Deploy the][fulfillment] [firebase-assistant-androidthings][this-action] function, a Firebase function, that processes the API.AI agent's intents when users say something that triggers the intents.
 
 Run the sample
 --------------
@@ -68,6 +69,8 @@ License for the specific language governing permissions and limitations under
 the License.
 
 
+[this-action]: https://github.com/odwdinc/AndroidThings-GoogleAssistant/tree/master/firebase-assistant-androidthings
+[firebase]: https://console.firebase.google.com/
 [AOgoogle]: https://console.actions.google.com
 [fulfillment]: https://developers.google.com/actions/get-started/deploy-fulfillment
 [API-AI-Agent]: https://docs.api.ai/docs/get-started
