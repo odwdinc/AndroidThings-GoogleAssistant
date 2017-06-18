@@ -17,7 +17,7 @@ Pre-requisites
 - [Firebase][firebase] Tools from Google for developing great apps, engaging with your users
 - [Deploy][fulfillment] the [firebase-assistant-androidthings][this-action] function, a Firebase function, that processes the API.AI agent's intents when users say something that triggers the intents.
 
-Run the sample
+Setup Web Function and Servicers
 --------------
 
 - Configure the Google API Console Project to use the [Google Assistant API][google-assistant-api-config].
@@ -31,6 +31,26 @@ google-oauthlib-tool --client-secrets client_secret_NNNN.json \
                      --save
 ```
 - Make sure to set the [Activity Controls][set-activity-controls] for the Google Account using the application.
+- Go to the Actions on [Google Developer Console][AOgoogle].
+  - Click on **Add/Import project**,
+  - Click on **Enter name or choose a project**,
+  - Find and Click on the project created in the above steps,
+  - Click on **Import Project**,
+- **API.AI**
+  - Fill out the **newAgent** page
+    - **GOOGLE PROJECT**: Needs to be set to the same project as created in the above steps.
+  - Save
+  - Click the settings icon next to the name of the Agent.
+    - Click on **Export and Import**
+    - Click on Import from Zip, Upload the [JouleBoard.zip][JouleBoard]
+  - Click Integrations
+    - Enable **Actions on Google.**
+    - Set any Additional triggering intents.
+    - Save/Update
+
+Run the sample
+--------------
+
 - On the first install, grant the sample required permissions for audio and internet access:
 ```bash
 ./gradlew assembleDebug
@@ -69,6 +89,7 @@ License for the specific language governing permissions and limitations under
 the License.
 
 
+[JouleBoard]: https://github.com/odwdinc/AndroidThings-GoogleAssistant/tree/master/api.ai/JouleBoard.zip
 [this-action]: https://github.com/odwdinc/AndroidThings-GoogleAssistant/tree/master/firebase-assistant-androidthings
 [firebase]: https://console.firebase.google.com/
 [AOgoogle]: https://console.actions.google.com
