@@ -15,7 +15,7 @@ Pre-requisites
 - [API.AI Agent][API-AI-Agent] An Actions project defines metadata about your app and lets you track your app through the approval process. An API.AI agent defines intents that map what users can say to a corresponding response, which is returned by fulfillment.
 - [Actions on Google][AOgoogle] lets developers build apps for the Google Assistant.
 - [Firebase][firebase] Tools from Google for developing great apps, engaging with your users
-- [Deploy the][fulfillment] [firebase-assistant-androidthings][this-action] function, a Firebase function, that processes the API.AI agent's intents when users say something that triggers the intents.
+- [Deploy][fulfillment] the [firebase-assistant-androidthings][this-action] function, a Firebase function, that processes the API.AI agent's intents when users say something that triggers the intents.
 
 Run the sample
 --------------
