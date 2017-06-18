@@ -67,13 +67,17 @@ adb install -g app/build/outputs/apk/app-debug.apk
 ./gradlew installDebug
 adb shell am start com.example.androidthings.assistant/.AssistantActivity
 ```
-- Try the assistant demo:
-
+- Try the assistant Action on Google:
   - Press the button: recording starts.
-  - Ask a question in the microphone.
+  - Use the microphone to say **"talk to"** name of  **Action on Google** you setup.
   - Release the button: recording stops.
-  - The Google Assistant answer should playback on the speaker.
-
+  - The Google Assistant answer should playback on the speaker that it is featching the test vertion of your **Action on Google**.
+  - Try saying things like:
+    - **"Display Hello World on LCD"**
+    - **"Turn on LED 1"**
+    - **"Turn off LED 1"**
+  - To Stop your **Action on Google** say **"stop"**.
+    
 License
 -------
 
