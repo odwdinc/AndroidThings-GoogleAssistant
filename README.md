@@ -10,28 +10,11 @@ Pre-requisites
 
 - Android Studio 2.2+.
 - Android Things compatible board.
-- If using [AIY Projects Voice Kit][voice-kit]:
-    - Android Things Raspberry Pi Dev Preview [3.1 image][dev-preview-download] with I2S enabled.
-        - mount the sdcard image
-
-              # replace sdb1 with the sdcard reader device.
-              mount -t msdos /dev/sdb1 /mnt/disk
-
-        - edit `config.txt`
-
-              # comment or remove this line:
-              # dtoverlay=pwm-2chan-with-clk,pin=18,func=2,pin2=13,func2=4
-              #
-              # uncomment or add this line:
-              dtoverlay=generic-i2s
-
-        - umount the sdcard image
-
-              sync
-              umount /mnt/disk
-- If using Android Things: supported [microphone][mic] and [speaker][speaker].
-    - set `AUDIO_USE_I2S_VOICEHAT_IF_AVAILABLE = false` in `AssistantActivity.java`
+- Android Things: supported [microphone][mic] and [speaker][speaker].
 - [Google API Console Project][console].
+- [API.AI Agent][API-AI-Agent] An Actions project defines metadata about your app and lets you track your app through the approval process. An API.AI agent defines intents that map what users can say to a corresponding response, which is returned by fulfillment.
+- [Actions on Google][AOgoogle]
+- [Deploy the fulfillment][fulfillment], a Firebase function, that processes the API.AI agent's intents when users say something that triggers the intents.
 
 Run the sample
 --------------
@@ -83,7 +66,9 @@ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
 License for the specific language governing permissions and limitations under
 the License.
-
+[AOgoogle]: https://console.actions.google.com
+[fulfillment]: https://developers.google.com/actions/get-started/deploy-fulfillment
+[API-AI-Agent]: https://docs.api.ai/docs/get-started
 [voice-kit]: https://aiyprojects.withgoogle.com/voice/
 [console]: https://console.developers.google.com
 [google-assistant-api-config]: https://developers.google.com/assistant/sdk/prototype/getting-started-other-platforms/config-dev-project-and-account

@@ -24,7 +24,6 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -42,11 +41,6 @@ import com.google.assistant.embedded.v1alpha1.ConverseConfig;
 import com.google.assistant.embedded.v1alpha1.ConverseRequest;
 import com.google.assistant.embedded.v1alpha1.ConverseResponse;
 import com.google.assistant.embedded.v1alpha1.EmbeddedAssistantGrpc;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.protobuf.ByteString;
 
 import org.json.JSONException;
@@ -54,9 +48,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -334,7 +326,7 @@ public class AssistantActivity extends Activity implements Button.OnButtonEventL
         try {
             mAssistantService = EmbeddedAssistantGrpc.newStub(channel)
                     .withCallCredentials(MoreCallCredentials.from(
-                            Credentials.fromResource(this, R.raw.gscredentials)
+                            Credentials.fromResource(this, R.raw.credentials)
                     ));
         } catch (IOException|JSONException e) {
             Log.e(TAG, "error creating assistant service:", e);
