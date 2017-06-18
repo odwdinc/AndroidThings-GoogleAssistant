@@ -15,7 +15,6 @@ Pre-requisites
 - [API.AI Agent][API-AI-Agent] An Actions project defines metadata about your app and lets you track your app through the approval process. An API.AI agent defines intents that map what users can say to a corresponding response, which is returned by fulfillment.
 - [Actions on Google][AOgoogle] lets developers build apps for the Google Assistant.
 - [Firebase][firebase] Tools from Google for developing great apps, engaging with your users
-- [Deploy][fulfillment] the [firebase-assistant-androidthings][this-action] function, a Firebase function, that processes the API.AI agent's intents when users say something that triggers the intents.
 
 Setup Web Function and Servicers
 --------------
@@ -31,6 +30,7 @@ google-oauthlib-tool --client-secrets client_secret_NNNN.json \
                      --save
 ```
 - Make sure to set the [Activity Controls][set-activity-controls] for the Google Account using the application.
+- [Deploy][fulfillment] the [firebase-assistant-androidthings][this-action] function, the PROJECT_ID  need to match the one created in the above steps. Save the Function URL from the **firebase deploy** command.
 - Go to the Actions on [Google Developer Console][AOgoogle].
   - Click on **Add/Import project**,
   - Click on **Enter name or choose a project**,
@@ -39,15 +39,21 @@ google-oauthlib-tool --client-secrets client_secret_NNNN.json \
 - **API.AI**
   - Fill out the **newAgent** page
     - **GOOGLE PROJECT**: Needs to be set to the same project as created in the above steps.
-  - Save
+    - Save
   - Click the settings icon next to the name of the Agent.
     - Click on **Export and Import**
     - Click on Import from Zip, Upload the [JouleBoard.zip][JouleBoard]
+    - Save
   - Click Integrations
     - Enable **Actions on Google.**
     - Set any Additional triggering intents.
     - Save/Update
-
+  - Click Fulfillment
+    - **ENABLED** Webhooks
+    - set **URL*** to the firebase function URL from the above steps.
+    - set **DOMAINS** to  **Enable webhook for all domains**.
+    - Save
+    
 Run the sample
 --------------
 
