@@ -11,8 +11,9 @@ Pre-requisites
 --------------
 
 - Android Studio 2.2+.
-- Android Things compatible board.
+- Android Things [Joule Board][Joule_Board].
 - Android Things: supported [microphone][mic] and [speaker][speaker].
+- [Grove - LCD RGB Backlight][jhd1313m1].
 - [Google API Console Project][console].
 - [API.AI Agent][API-AI-Agent] An Actions project defines metadata about your app and lets you track your app through the approval process. An API.AI agent defines intents that map what users can say to a corresponding response, which is returned by fulfillment.
 - [Actions on Google][AOgoogle] lets developers build apps for the Google Assistant.
@@ -58,7 +59,8 @@ google-oauthlib-tool --client-secrets client_secret_NNNN.json \
     
 Run the sample
 --------------
-
+- Connect the mic and speeker to a usb hub and plug the hub into the usb port on the[Joule Board][Joule_Board].
+- Connect the[Grove - LCD RGB Backlight][jhd1313m1]to **I2C0** on the[Joule Board][Joule_Board]
 - On the first install, grant the sample required permissions for audio and internet access:
 ```bash
 ./gradlew assembleDebug
@@ -101,6 +103,8 @@ License for the specific language governing permissions and limitations under
 the License.
 
 
+[jhd1313m1]: https://www.seeedstudio.com/Grove-LCD-RGB-Backlight-p-1643.html
+[Joule_Board]: https://developer.android.com/things/hardware/joule.html
 [JouleBoard]: https://github.com/odwdinc/AndroidThings-GoogleAssistant/tree/master/api.ai/JouleBoard.zip
 [this-action]: https://github.com/odwdinc/AndroidThings-GoogleAssistant/tree/master/firebase-assistant-androidthings
 [firebase]: https://console.firebase.google.com/
