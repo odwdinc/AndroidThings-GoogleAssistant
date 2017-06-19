@@ -56,6 +56,8 @@ public class RealtimeDatabase {
                 }
             }else if(text != null){
                 if (Device.contains("lcd")){
+                    mLcd.setCursor(0, 0);
+                    mLcd.write( "Showing:");
                     mLcd.setCursor(1,0);
                     mLcd.write( text);
                 }
