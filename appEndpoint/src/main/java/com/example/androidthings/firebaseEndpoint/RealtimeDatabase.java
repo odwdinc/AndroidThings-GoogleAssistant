@@ -1,4 +1,4 @@
-package com.example.androidthings.assistant;
+package com.example.androidthings.firebaseEndpoint;
 
 import android.os.Build;
 import android.os.Handler;
@@ -17,8 +17,8 @@ import java.util.Map;
 import mraa.mraa;
 import upm_jhd1313m1.Jhd1313m1;
 
-import static com.example.androidthings.assistant.BoardDefaults.getBoardVariant;
-import static com.example.androidthings.assistant.BoardDefaults.getI2CPort;
+import static com.example.androidthings.firebaseEndpoint.BoardDefaults.getBoardVariant;
+import static com.example.androidthings.firebaseEndpoint.BoardDefaults.getI2CPort;
 
 /**
  * Created by antho on 6/17/2017.

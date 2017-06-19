@@ -236,6 +236,8 @@ public class AssistantActivity extends Activity implements Button.OnButtonEventL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "starting assistant demo");
+        mMainHandler = new Handler(getMainLooper());
+        myDB= new RealtimeDatabase(mMainHandler);
 
         setContentView(R.layout.activity_main);
         ListView assistantRequestsListView = (ListView)findViewById(R.id.assistantRequestsListView);
@@ -243,12 +245,11 @@ public class AssistantActivity extends Activity implements Button.OnButtonEventL
                 new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
                         mAssistantRequests);
         assistantRequestsListView.setAdapter(mAssistantRequestsAdapter);
-        mMainHandler = new Handler(getMainLooper());
 
         mAssistantThread = new HandlerThread("assistantThread");
         mAssistantThread.start();
         mAssistantHandler = new Handler(mAssistantThread.getLooper());
-        myDB= new RealtimeDatabase(mMainHandler);
+
 
 
         try {
@@ -331,6 +332,8 @@ public class AssistantActivity extends Activity implements Button.OnButtonEventL
         } catch (IOException|JSONException e) {
             Log.e(TAG, "error creating assistant service:", e);
         }
+
+        myDB.mLcd.write("Finished..");
     }
 
 
