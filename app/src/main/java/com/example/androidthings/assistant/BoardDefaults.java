@@ -79,6 +79,24 @@ public class BoardDefaults {
     }
 
     /**
+     * Return the preferred I2C port for each board.
+     */
+    public static String getI2CPort() {
+        switch (getBoardVariant()) {
+            case DEVICE_EDISON_ARDUINO:
+                return "I2C6";
+            case DEVICE_EDISON:
+                return "I2C1";
+            case DEVICE_JOULE:
+                return "I2C0";
+            case DEVICE_RPI3:
+                return "I2C1";
+            default:
+                throw new IllegalStateException("Unknown Build.DEVICE " + Build.DEVICE);
+        }
+    }
+
+    /**
      * Return the I2S Bus that the Voice Hat is connected to.
      */
     public static String getI2SDeviceForVoiceHat() {

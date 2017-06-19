@@ -18,6 +18,7 @@ import mraa.mraa;
 import upm_jhd1313m1.Jhd1313m1;
 
 import static com.example.androidthings.assistant.BoardDefaults.getBoardVariant;
+import static com.example.androidthings.assistant.BoardDefaults.getI2CPort;
 
 /**
  * Created by antho on 6/17/2017.
@@ -100,7 +101,7 @@ public class RealtimeDatabase {
 
     public RealtimeDatabase(Handler _mMainHandler) {
         mMainHandler = _mMainHandler;
-        int i2cIndex = mraa.getI2cLookup("I2C0");
+        int i2cIndex = mraa.getI2cLookup(getI2CPort());
         mLcd = new upm_jhd1313m1.Jhd1313m1(i2cIndex);
         mLcd.clear();
 
