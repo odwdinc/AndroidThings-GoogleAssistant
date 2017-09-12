@@ -14,8 +14,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import mraa.mraa;
-import upm_jhd1313m1.Jhd1313m1;
+//import mraa.mraa;
+//import upm_jhd1313m1.Jhd1313m1;
 
 import static com.example.androidthings.assistant.BoardDefaults.getBoardVariant;
 import static com.example.androidthings.assistant.BoardDefaults.getI2CPort;
@@ -28,7 +28,7 @@ public class RealtimeDatabase {
     private static final String TAG = "RealtimeDatabase";
     private DatabaseReference myRefMessage;
     private DatabaseReference myRefDevice;
-    public Jhd1313m1 mLcd = null;
+    //public Jhd1313m1 mLcd = null;
     private int mHRInterval = 30000; // 30 seconds by default, can be changed later
     HashMap FulfillmentMap = new HashMap<String, String>();
     private Handler mMainHandler;
@@ -40,7 +40,7 @@ public class RealtimeDatabase {
         public void onDataChange(DataSnapshot dataSnapshot) {
             // This method is called once with the initial value and again
             // whenever data at this location is updated.
-            mLcd.clear();
+            //mLcd.clear();
             FulfillmentMap.clear();
             String intentName =   dataSnapshot.child("intentName").getValue(String.class);
             String Device =   dataSnapshot.child(intentName).child("Device").getValue(String.class);
@@ -51,25 +51,27 @@ public class RealtimeDatabase {
 
             if(color != null){
                 if (Device.contains("lcd")){
-                    mLcd.setCursor(1,0);
-                    mLcd.write( Device + " ["+Status+"] "+color);
+                   /* mLcd.setCursor(1,0);
+                    mLcd.write( Device + " ["+Status+"] "+color);*/
                 }
             }else if(text != null){
                 if (Device.contains("lcd")){
+                    /*
                     mLcd.setCursor(0, 0);
                     mLcd.write( "Showing:");
                     mLcd.setCursor(1,0);
                     mLcd.write( text);
+                    */
                 }
             }else {
-                mLcd.setCursor(0, 0);
+                /*mLcd.setCursor(0, 0);*/
                 //String value = dataSnapshot.getValue(String.class);
                 if (number != null) {
                     Log.d(TAG, intentName + " is: " + Device + "[" + number + "] " + Status);
-                    mLcd.write(Device + " [" + number + "] " + Status);
+                    //mLcd.write(Device + " [" + number + "] " + Status);
                 } else {
                     Log.d(TAG, intentName);
-                    mLcd.write(intentName);
+                    //mLcd.write(intentName);
                 }
             }
             FulfillmentMap.put("speech","Ok");
@@ -103,11 +105,11 @@ public class RealtimeDatabase {
 
     public RealtimeDatabase(Handler _mMainHandler) {
         mMainHandler = _mMainHandler;
-        int i2cIndex = mraa.getI2cLookup(getI2CPort());
+    /*    int i2cIndex = mraa.getI2cLookup(getI2CPort());
         mLcd = new upm_jhd1313m1.Jhd1313m1(i2cIndex);
         mLcd.clear();
         mLcd.write("Starting..");
-        mLcd.setCursor(1,0);
+        mLcd.setCursor(1,0);*/
         Log.d(TAG,"Settng up SN:"+Build.SERIAL);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRefMessage = database.getReference("message");
@@ -139,10 +141,10 @@ public class RealtimeDatabase {
         if (myRefDevice != null){
             myRefDevice.removeValue();
         }
-        if(mLcd != null){
+   /*     if(mLcd != null){
             mLcd.delete();
             mLcd = null;
-        }
+        }*/
     }
 
 

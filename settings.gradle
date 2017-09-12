@@ -15,4 +15,7 @@
  */
 
 include ':app'
-include ':appEndpoint'
+//include ':appEndpoint'
+
+include ':models'
+include ':pocketsphinx-android-5prealpha-release'

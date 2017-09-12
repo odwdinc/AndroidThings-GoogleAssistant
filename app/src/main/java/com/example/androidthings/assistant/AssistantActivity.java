@@ -24,12 +24,15 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.things.contrib.driver.button.Button;
 import com.google.android.things.pio.Gpio;
@@ -45,23 +48,41 @@ import com.google.protobuf.ByteString;
 
 import org.json.JSONException;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import edu.cmu.pocketsphinx.Assets;
+import edu.cmu.pocketsphinx.Hypothesis;
+import edu.cmu.pocketsphinx.RecognitionListener;
+import edu.cmu.pocketsphinx.SpeechRecognizer;
+import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.auth.MoreCallCredentials;
 import io.grpc.stub.StreamObserver;
 
+import static android.widget.Toast.makeText;
 
-public class AssistantActivity extends Activity implements Button.OnButtonEventListener {
+
+public class AssistantActivity extends Activity implements
+        RecognitionListener {
     private static final String TAG = AssistantActivity.class.getSimpleName();
 
     // Peripheral and drivers constants.
     private static final boolean AUDIO_USE_I2S_VOICEHAT_IF_AVAILABLE = false;
-    private static final int BUTTON_DEBOUNCE_DELAY_MS = 20;
+    //private static final int BUTTON_DEBOUNCE_DELAY_MS = 20;
+
+
+    /* Named searches allow to quickly reconfigure the decoder */
+    private static final String KWS_SEARCH = "wakeup";
+
+    /* Keyword we are looking for to activate menu */
+    private static final String KEYPHRASE = "ok intel";
+
 
 
 
@@ -154,6 +175,7 @@ public class AssistantActivity extends Activity implements Button.OnButtonEventL
         @Override
         public void onError(Throwable t) {
             Log.e(TAG, "converse error:", t);
+            switchSearch(KWS_SEARCH);
         }
 
         @Override
@@ -166,6 +188,7 @@ public class AssistantActivity extends Activity implements Button.OnButtonEventL
                     Log.e(TAG, "error turning off LED:", e);
                 }
             }
+            switchSearch(KWS_SEARCH);
         }
     };
 
@@ -175,7 +198,6 @@ public class AssistantActivity extends Activity implements Button.OnButtonEventL
 
     // Hardware peripherals.
     private VoiceHatDriver mVoiceHat;
-    private Button mButton;
     private Gpio mLed;
 
     // Assistant Thread and Runnables implementing the push-to-talk functionality.
@@ -223,6 +245,8 @@ public class AssistantActivity extends Activity implements Button.OnButtonEventL
             }
             mAudioRecord.stop();
             mAudioTrack.play();
+
+            //recognizer.startListening();
         }
     };
     private Handler mMainHandler;
@@ -231,6 +255,8 @@ public class AssistantActivity extends Activity implements Button.OnButtonEventL
     private ArrayList<String> mAssistantRequests = new ArrayList<>();
     private ArrayAdapter<String> mAssistantRequestsAdapter;
     private RealtimeDatabase myDB = null;
+    private HashMap<String, String> captions;
+    private SpeechRecognizer recognizer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -239,7 +265,18 @@ public class AssistantActivity extends Activity implements Button.OnButtonEventL
         mMainHandler = new Handler(getMainLooper());
         myDB= new RealtimeDatabase(mMainHandler);
 
+
+        // Prepare the data for UI
+        captions = new HashMap<String, String>();
+        captions.put(KWS_SEARCH, "To start demonstration say \"" + KEYPHRASE + "\".");
+
         setContentView(R.layout.activity_main);
+
+
+        ((TextView) findViewById(R.id.caption_text))
+                .setText("Preparing the recognizer");
+        runRecognizerSetup();
+
         ListView assistantRequestsListView = (ListView)findViewById(R.id.assistantRequestsListView);
         mAssistantRequestsAdapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
@@ -249,7 +286,6 @@ public class AssistantActivity extends Activity implements Button.OnButtonEventL
         mAssistantThread = new HandlerThread("assistantThread");
         mAssistantThread.start();
         mAssistantHandler = new Handler(mAssistantThread.getLooper());
-
 
 
         try {
@@ -271,9 +307,6 @@ public class AssistantActivity extends Activity implements Button.OnButtonEventL
                     }
                 }
             }
-            mButton = new Button(BoardDefaults.getGPIOForButton(), Button.LogicState.PRESSED_WHEN_HIGH);
-            mButton.setDebounceDelay(BUTTON_DEBOUNCE_DELAY_MS);
-            mButton.setOnButtonEventListener(this);
             PeripheralManagerService pioService = new PeripheralManagerService();
             mLed = pioService.openGpio(BoardDefaults.getGPIOForLED());
             mLed.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
@@ -333,33 +366,50 @@ public class AssistantActivity extends Activity implements Button.OnButtonEventL
             Log.e(TAG, "error creating assistant service:", e);
         }
 
-        myDB.mLcd.write("Finished..");
+        //myDB.mLcd.write("Finished..");
+
+
     }
 
 
-
-
-
-    @Override
-    public void onButtonEvent(Button button, boolean pressed) {
-        try {
-            if (mLed != null) {
-                mLed.setValue(pressed);
+    private void runRecognizerSetup() {
+        // Recognizer initialization is a time-consuming and it involves IO,
+        // so we execute it in async task
+        new AsyncTask<Void, Void, Exception>() {
+            @Override
+            protected Exception doInBackground(Void... params) {
+                try {
+                    Assets assets = new Assets(com.example.androidthings.assistant.AssistantActivity.this);
+                    File assetDir = assets.syncAssets();
+                    setupRecognizer(assetDir);
+                } catch (IOException e) {
+                    return e;
+                }
+                return null;
             }
-        } catch (IOException e) {
-            Log.d(TAG, "error toggling LED:", e);
-        }
-        if (pressed) {
-            mAssistantHandler.post(mStartAssistantRequest);
-        } else {
-            mAssistantHandler.post(mStopAssistantRequest);
-        }
+
+            @Override
+            protected void onPostExecute(Exception result) {
+                if (result != null) {
+                    ((TextView) findViewById(R.id.caption_text))
+                            .setText("Failed to init recognizer " + result);
+                } else {
+                    switchSearch(KWS_SEARCH);
+                }
+            }
+        }.execute();
     }
+
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         Log.i(TAG, "destroying assistant demo");
+
+        if (recognizer != null) {
+            recognizer.cancel();
+            recognizer.shutdown();
+        }
 
         if (myDB != null){
             myDB.Destroy();
@@ -383,14 +433,6 @@ public class AssistantActivity extends Activity implements Button.OnButtonEventL
             }
             mLed = null;
         }
-        if (mButton != null) {
-            try {
-                mButton.close();
-            } catch (IOException e) {
-                Log.w(TAG, "error closing button", e);
-            }
-            mButton = null;
-        }
 
         if (mVoiceHat != null) {
             try {
@@ -409,5 +451,121 @@ public class AssistantActivity extends Activity implements Button.OnButtonEventL
             }
         });
         mAssistantThread.quitSafely();
+    }
+
+
+    private void setupRecognizer(File assetsDir) throws IOException {
+        // The recognizer can be configured to perform multiple searches
+        // of different kind and switch between them
+
+        recognizer = SpeechRecognizerSetup.defaultSetup()
+                .setAcousticModel(new File(assetsDir, "en-us-ptm"))
+                .setDictionary(new File(assetsDir, "cmudict-en-us.dict"))
+
+                .setRawLogDir(assetsDir) // To disable logging of raw audio comment out this call (takes a lot of space on the device)
+
+                .getRecognizer();
+        recognizer.addListener(this);
+
+        /** In your application you might not need to add all those searches.
+         * They are added here for demonstration. You can leave just one.
+         */
+
+        // Create keyword-activation search.
+        recognizer.addKeyphraseSearch(KWS_SEARCH, KEYPHRASE);
+    }
+
+
+    private void switchSearch(String searchName) {
+        recognizer.stop();
+
+        AssistantActivity.this.runOnUiThread(new Runnable() {
+            public void run() {
+                String caption = captions.get(KWS_SEARCH);
+                ((TextView) findViewById(R.id.caption_text)).setText(caption);
+            }
+        });
+
+
+        // If we are not spotting, start listening with timeout (10000 ms or 10 seconds).
+        if (searchName.equals(KWS_SEARCH))
+            recognizer.startListening(searchName);
+        else
+            recognizer.startListening(searchName, 10000);
+
+    }
+
+/*
+
+    @Override
+    public void onButtonEvent(Button button, boolean pressed) {
+        try {
+            if (mLed != null) {
+                mLed.setValue(pressed);
+            }
+        } catch (IOException e) {
+            Log.d(TAG, "error toggling LED:", e);
+        }
+        if (pressed) {
+            mAssistantHandler.post(mStartAssistantRequest);
+        } else {
+            mAssistantHandler.post(mStopAssistantRequest);
+        }
+    }*/
+
+
+    ///////////////////////////////////////////--------------------------------\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    @Override
+    public void onBeginningOfSpeech() {
+
+    }
+
+    @Override
+    public void onEndOfSpeech() {
+        if (!recognizer.getSearchName().equals(KWS_SEARCH))
+            switchSearch(KWS_SEARCH);
+    }
+
+    /**
+     * In partial result we get quick updates about current hypothesis. In
+     * keyword spotting mode we can react here, in other modes we need to wait
+     * for final result in onResult.
+     */
+    @Override
+    public void onPartialResult(Hypothesis hypothesis) {
+        if (hypothesis == null)
+            return;
+
+        String text = hypothesis.getHypstr();
+        if (text.equals(KEYPHRASE)) {
+            //((TextView) findViewById(R.id.caption_text)).setText("KEYPHRASE");
+            recognizer.stop();
+            mAssistantHandler.postDelayed(mStartAssistantRequest, 10);
+            mAssistantHandler.postDelayed(mStopAssistantRequest, 3500);
+        } else {
+            ((TextView) findViewById(R.id.caption_text)).setText(text);
+        }
+    }
+
+    /**
+     * This callback is called when we stop the recognizer.
+     */
+    @Override
+    public void onResult(Hypothesis hypothesis) {
+        ((TextView) findViewById(R.id.caption_text)).setText("Processing the request...");
+        if (hypothesis != null) {
+            String text = hypothesis.getHypstr();
+            makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onError(Exception error) {
+        ((TextView) findViewById(R.id.caption_text)).setText(error.getMessage());
+    }
+
+    @Override
+    public void onTimeout() {
+        switchSearch(KWS_SEARCH);
     }
 }

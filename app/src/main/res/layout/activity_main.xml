@@ -11,10 +11,20 @@
     android:paddingTop="16dp"
     tools:context=".AssistantActivity">
 
+    <EditText
+        android:id="@+id/caption_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Name" />
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/caption_text"
+        android:layout_alignParentStart="true">
 
         <ListView
             android:layout_width="match_parent"
