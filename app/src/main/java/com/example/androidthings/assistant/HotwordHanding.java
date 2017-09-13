@@ -46,6 +46,7 @@ public class HotwordHanding implements RecognitionListener {
 
     private HashMap<String, String> captions;
     private SpeechRecognizer recognizer;
+    private Toast toast;
 
 
     public HotwordHanding(Activity _appActivity, AppUpdates _appUpdates) {
@@ -54,7 +55,7 @@ public class HotwordHanding implements RecognitionListener {
         // Prepare the data for UI
         captions = new HashMap<String, String>();
         captions.put(KWS_SEARCH, "To start demonstration say \"" + KEYPHRASE + "\".");
-
+        toast = Toast.makeText(appActivity.getApplicationContext(), "", Toast.LENGTH_LONG);
         runRecognizerSetup();
     }
 
@@ -163,12 +164,18 @@ public class HotwordHanding implements RecognitionListener {
             //((TextView) findViewById(R.id.caption_text)).setText("KEYPHRASE");
             recognizer.stop();
             appUpdates.StartAssistan(StartDelay);
-            appUpdates.StopAssistan(StopDelay);
+            appUpdates.StopAssistan(StopDelay + StartDelay);
 
 
         } else {
             appUpdates.updateTextView(text);
         }
+    }
+
+
+    public void showText(String message) {
+        toast.setText(message);
+        toast.show();
     }
 
     /**
@@ -179,7 +186,7 @@ public class HotwordHanding implements RecognitionListener {
         appUpdates.updateTextView("Try Saying \"Talk to my home device\" ");
         if (hypothesis != null) {
             String text = hypothesis.getHypstr();
-            makeText(appActivity.getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+            //makeText(appActivity.getApplicationContext(), text, Toast.LENGTH_SHORT).show();
         }
     }
 

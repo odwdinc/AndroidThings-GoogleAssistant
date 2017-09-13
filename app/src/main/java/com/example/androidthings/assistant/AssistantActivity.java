@@ -63,6 +63,8 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.auth.MoreCallCredentials;
 import io.grpc.stub.StreamObserver;
 
+import static android.widget.Toast.makeText;
+
 
 public class AssistantActivity extends Activity implements AppUpdates {
     private static final String TAG = AssistantActivity.class.getSimpleName();
@@ -192,6 +194,12 @@ public class AssistantActivity extends Activity implements AppUpdates {
         @Override
         public void run() {
             Log.i(TAG, "starting assistant request");
+            try {
+                mLed.setValue(true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            hotWording.showText("Listening...");
             mAudioRecord.startRecording();
             mAssistantRequestObserver = mAssistantService.converse(mAssistantResponseObserver);
             mAssistantRequestObserver.onNext(ConverseRequest.newBuilder().setConfig(
@@ -223,6 +231,11 @@ public class AssistantActivity extends Activity implements AppUpdates {
         @Override
         public void run() {
             Log.i(TAG, "ending assistant request");
+            try {
+                mLed.setValue(false);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             mAssistantHandler.removeCallbacks(mStreamAssistantRequest);
             if (mAssistantRequestObserver != null) {
                 mAssistantRequestObserver.onCompleted();
@@ -253,12 +266,13 @@ public class AssistantActivity extends Activity implements AppUpdates {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 
-        Intent intent = new Intent(this, VideoPlayer.class);
-        intent.putExtra("subject", "dogs");
+        //Intent intent = new Intent(this, VideoPlayer.class);
+        //intent.putExtra("subject", "dogs");
 
-        startActivity(intent);
+        //startActivity(intent);
 
         setContentView(R.layout.activity_main);
+
 
         updateTextView("Preparing the recognizer");
         hotWording = new HotwordHanding(AssistantActivity.this, this);
@@ -429,6 +443,7 @@ public class AssistantActivity extends Activity implements AppUpdates {
 
     @Override
     public void StopAssistan(int StopDelay) {
+
         mAssistantHandler.postDelayed(mStopAssistantRequest, StopDelay);
     }
 

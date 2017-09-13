@@ -65,16 +65,17 @@ public class RealtimeDatabase {
             if (media != null) {
                 switch (media) {
                     case "pictures":
+                        dataSnapshot.child(intentName).child("media").getRef().setValue(null);
                         FulfillmentMap.put("speech", "Now Showing " + media + " of " + subject);
                         dataSnapshot.child(intentName).child("Fulfillment").getRef().setValue(FulfillmentMap);
                         displayImage(subject);
-                        dataSnapshot.child(intentName).child("media").getRef().setValue(null);
+
                         break;
                     case "movie":
+                        dataSnapshot.child(intentName).child("media").getRef().setValue(null);
                         FulfillmentMap.put("speech", "Now Showing " + media + " of " + subject);
                         dataSnapshot.child(intentName).child("Fulfillment").getRef().setValue(FulfillmentMap);
                         displayVideos(subject);
-                        dataSnapshot.child(intentName).child("media").getRef().setValue(null);
                         break;
                     default:
                         FulfillmentMap.put("speech", "Unknow media" + media);

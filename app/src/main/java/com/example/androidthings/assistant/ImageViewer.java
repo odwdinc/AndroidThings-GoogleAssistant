@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -17,6 +18,14 @@ import java.io.InputStream;
 public class ImageViewer extends Activity {
 
     private static final String TAG = ImageViewer.class.getSimpleName();
+    private Handler mMainHandler;
+    private Runnable finish = new Runnable() {
+
+        @Override
+        public void run() {
+            finish();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +34,7 @@ public class ImageViewer extends Activity {
 
         Intent intent = getIntent();
         String subject = intent.getStringExtra("subject");
+        mMainHandler = new Handler(getMainLooper());
 
         Log.i(TAG, "starting Image Viewer for subject [ " + subject + " ]");
         setContentView(R.layout.images);
@@ -32,9 +42,25 @@ public class ImageViewer extends Activity {
 
         ImageView mImage = (ImageView) findViewById(R.id.mImage);
 
+        String fileName = "oregon-trail-dysentery_5.jpg";
+        switch (subject) {
+            case "dogs":
+                fileName = "dogs.jpg";
+                break;
+            case "cats":
+                fileName = "cats.jpg";
+                break;
+            case "vacation":
+                fileName = "vacation.jpg";
+                break;
+            case "Intel":
+                fileName = "intel.jpg";
+                break;
+        }
+
         InputStream ims = null;
         try {
-            ims = getAssets().open("oregon-trail-dysentery_5.jpg");
+            ims = getAssets().open(fileName);
             // load image as Drawable
             Drawable d = Drawable.createFromStream(ims, null);
             // set image to ImageView
@@ -42,6 +68,8 @@ public class ImageViewer extends Activity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        mMainHandler.postDelayed(finish, 5000);
 
     }
 }
