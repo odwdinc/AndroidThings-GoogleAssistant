@@ -266,10 +266,10 @@ public class AssistantActivity extends Activity implements AppUpdates {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 
-        //Intent intent = new Intent(this, VideoPlayer.class);
-        //intent.putExtra("subject", "dogs");
+        /*Intent intent = new Intent(this, VideoPlayer.class);
+        intent.putExtra("subject", "dogs");
 
-        //startActivity(intent);
+        startActivity(intent);*/
 
         setContentView(R.layout.activity_main);
 

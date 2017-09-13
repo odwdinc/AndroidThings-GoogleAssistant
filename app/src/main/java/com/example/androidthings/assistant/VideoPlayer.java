@@ -8,6 +8,7 @@ import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.widget.VideoView;
@@ -36,6 +37,15 @@ public class VideoPlayer extends Activity {
     private int position = 0;
     private ProgressDialog progressDialog;
     private MediaController mediaControls;
+    private Handler mMainHandler;
+
+    private Runnable finish = new Runnable() {
+
+        @Override
+        public void run() {
+            finish();
+        }
+    };
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -44,6 +54,8 @@ public class VideoPlayer extends Activity {
 
         Intent intent = getIntent();
         String subject = intent.getStringExtra("subject");
+        mMainHandler = new Handler(getMainLooper());
+
 
         Log.i(TAG, "starting Image Viewer for subject [ " + subject + " ]");
 
@@ -54,6 +66,13 @@ public class VideoPlayer extends Activity {
         myVideoView = (VideoView) findViewById(R.id.video_view);
         //MediaPlayer player = new MediaPlayer();
 
+        File clip = new File("/sdcard/Movies/test.mp4");
+        if (clip.exists()) {
+            Log.i(TAG, "clip.exists()");
+        }
+        myVideoView.setVideoPath(clip.getAbsolutePath());
+
+        /*
         File clip = new File(Environment.getExternalStorageDirectory(),
                 "bigbuckbunny.mp4");
 
@@ -69,7 +88,7 @@ public class VideoPlayer extends Activity {
 
             myVideoView.requestFocus();
             myVideoView.start();
-        }
+        }*/
 
 //        try {
 //            afd = getAssets().openFd("bigbuckbunny.mp4");
@@ -87,5 +106,6 @@ public class VideoPlayer extends Activity {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
+        mMainHandler.postDelayed(finish, 5000);
     }
 }
