@@ -1,5 +1,7 @@
 package com.example.androidthings.assistant;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
@@ -26,6 +28,7 @@ import static com.example.androidthings.assistant.BoardDefaults.getI2CPort;
 
 public class RealtimeDatabase {
     private static final String TAG = "RealtimeDatabase";
+    private final Context appContext;
     private DatabaseReference myRefMessage;
     private DatabaseReference myRefDevice;
     //public Jhd1313m1 mLcd = null;
@@ -42,18 +45,49 @@ public class RealtimeDatabase {
             // whenever data at this location is updated.
             //mLcd.clear();
             FulfillmentMap.clear();
+
+            FulfillmentMap.put("speech", "Ok");
+            FulfillmentMap.put("displayText", "Hello World");
+            FulfillmentMap.put("source", "android-things");
             String intentName =   dataSnapshot.child("intentName").getValue(String.class);
+
+
             String Device =   dataSnapshot.child(intentName).child("Device").getValue(String.class);
             String number =   dataSnapshot.child(intentName).child("number").getValue(String.class);
             String Status =   dataSnapshot.child(intentName).child("state").getValue(String.class);
             String color =   dataSnapshot.child(intentName).child("color").getValue(String.class);
             String text =   dataSnapshot.child(intentName).child("text").getValue(String.class);
 
+            String media = dataSnapshot.child(intentName).child("media").getValue(String.class);
+            String subject = dataSnapshot.child(intentName).child("subject").getValue(String.class);
+
+
+            if (media != null) {
+                switch (media) {
+                    case "pictures":
+                        FulfillmentMap.put("speech", "Now Showing " + media + " of " + subject);
+                        dataSnapshot.child(intentName).child("Fulfillment").getRef().setValue(FulfillmentMap);
+                        displayImage(subject);
+                        dataSnapshot.child(intentName).child("media").getRef().setValue(null);
+                        break;
+                    case "movie":
+                        FulfillmentMap.put("speech", "Now Showing " + media + " of " + subject);
+                        dataSnapshot.child(intentName).child("Fulfillment").getRef().setValue(FulfillmentMap);
+                        displayVideos(subject);
+                        dataSnapshot.child(intentName).child("media").getRef().setValue(null);
+                        break;
+                    default:
+                        FulfillmentMap.put("speech", "Unknow media" + media);
+                        return;
+                }
+            }
+
             if(color != null){
                 if (Device.contains("lcd")){
                    /* mLcd.setCursor(1,0);
                     mLcd.write( Device + " ["+Status+"] "+color);*/
                 }
+                //else FulfillmentMap.put("speech","No LCD Device found");
             }else if(text != null){
                 if (Device.contains("lcd")){
                     /*
@@ -74,9 +108,7 @@ public class RealtimeDatabase {
                     //mLcd.write(intentName);
                 }
             }
-            FulfillmentMap.put("speech","Ok");
-            FulfillmentMap.put("displayText","Hello World");
-            FulfillmentMap.put("source","android-things");
+
 
             dataSnapshot.child(intentName).child("Fulfillment").getRef().setValue(FulfillmentMap);
         }
@@ -87,6 +119,19 @@ public class RealtimeDatabase {
             Log.w(TAG, "Failed to read value.", error.toException());
         }
     };
+
+    private void displayImage(String subject) {
+        Intent intent = new Intent(appContext, ImageViewer.class);
+        intent.putExtra("subject", subject);
+        appContext.startActivity(intent);
+    }
+
+    private void displayVideos(String subject) {
+        Intent intent = new Intent(appContext, VideoPlayer.class);
+        intent.putExtra("subject", subject);
+        appContext.startActivity(intent);
+
+    }
 
 
     ValueEventListener devicListner = new ValueEventListener() {
@@ -103,7 +148,8 @@ public class RealtimeDatabase {
     };
 
 
-    public RealtimeDatabase(Handler _mMainHandler) {
+    public RealtimeDatabase(Handler _mMainHandler, Context _appContext) {
+        appContext = _appContext;
         mMainHandler = _mMainHandler;
     /*    int i2cIndex = mraa.getI2cLookup(getI2CPort());
         mLcd = new upm_jhd1313m1.Jhd1313m1(i2cIndex);

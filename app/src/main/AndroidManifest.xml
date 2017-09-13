@@ -41,5 +41,12 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+
+
+        <activity
+            android:name=".VideoPlayer"
+            android:configChanges="orientation" />
+
+        <activity android:name=".ImageViewer" />
     </application>
 </manifest>

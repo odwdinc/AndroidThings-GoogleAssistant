@@ -176,7 +176,7 @@ public class HotwordHanding implements RecognitionListener {
      */
     @Override
     public void onResult(Hypothesis hypothesis) {
-        appUpdates.updateTextView("Processing the request...");
+        appUpdates.updateTextView("Try Saying \"Talk to my home device\" ");
         if (hypothesis != null) {
             String text = hypothesis.getHypstr();
             makeText(appActivity.getApplicationContext(), text, Toast.LENGTH_SHORT).show();

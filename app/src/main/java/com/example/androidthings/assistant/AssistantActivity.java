@@ -18,6 +18,7 @@ package com.example.androidthings.assistant;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioDeviceInfo;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -29,6 +30,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -245,7 +248,15 @@ public class AssistantActivity extends Activity implements AppUpdates {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "starting assistant demo");
         mMainHandler = new Handler(getMainLooper());
-        myDB= new RealtimeDatabase(mMainHandler);
+        myDB = new RealtimeDatabase(mMainHandler, AssistantActivity.this);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+
+        Intent intent = new Intent(this, VideoPlayer.class);
+        intent.putExtra("subject", "dogs");
+
+        startActivity(intent);
 
         setContentView(R.layout.activity_main);
 
